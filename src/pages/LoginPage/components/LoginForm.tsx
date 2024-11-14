@@ -5,15 +5,15 @@ import axios from "axios";
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
   const fields = [
     {
       label: "ID",
       type: "text",
-      value: email,
-      setValue: setEmail,
+      value: userId,
+      setValue: setUserId,
       placeholder: "아이디",
     },
     {
@@ -28,7 +28,7 @@ const LoginForm: React.FC = () => {
   const LoginHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     const body = {
-      email,
+      userId,
       password,
     };
     try {
@@ -41,8 +41,9 @@ const LoginForm: React.FC = () => {
         navigate("/main");
       }
     } catch (error) {
-      console.error(error);
       alert("유효하지 않은 ID 혹은 PW입니다.");
+      console.error(error);
+      
     }
   };
 
@@ -119,10 +120,8 @@ const Form = styled.form`
 const StyledInput = styled.input`
   width: 296px;
   height: 50px;
-  font-size: 20px;
-  padding: 0 15px 0 15px;
-  background: #fff;
-  border: 2px solid #a5a6b9;
+  padding: 0 15px;
+  font-size: 17px;
 `;
 
 const StyledMargin = styled.div`
