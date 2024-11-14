@@ -3,7 +3,6 @@ import LoginForm from "./components/LoginForm";
 import { Link } from "react-router-dom";
 
 const Login = () => {
-  // 문구가 추가 될걸 고려한 설계
   const links = [
     {
       text: "아이디가 없으신가요?",
@@ -68,19 +67,5 @@ const GotoSignUp = styled.div`
     font-size: 12px;
     font-weight: bold;
     color: #000000;
-  }
-`;
-
-const Logo = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 73px;
-  margin-top: 36px;
-  margin-bottom: 14px;
-  img {
-    width: 128px;
-    height: 100%;
   }
 `;
