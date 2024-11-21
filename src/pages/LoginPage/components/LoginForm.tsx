@@ -28,22 +28,21 @@ const LoginForm: React.FC = () => {
   const LoginHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     const body = {
-      userId,
+      username:userId,
       password,
     };
     try {
       const res = await axios.post(
-        "http://54.180.63.201:8080/api/user/login",
+        "https://pzjo7nmt2j.execute-api.ap-northeast-2.amazonaws.com/Prod/login",
         body
       );
       console.log(res);
       if (res.status === 200) {
-        navigate("/main");
+        // navigate("/main");
       }
     } catch (error) {
       alert("유효하지 않은 ID 혹은 PW입니다.");
-      console.error(error);
-      
+      console.log(error);
     }
   };
 

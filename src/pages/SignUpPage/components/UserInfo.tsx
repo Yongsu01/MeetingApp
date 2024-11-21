@@ -3,6 +3,7 @@ import styled from "styled-components";
 import React, { useState, useEffect, ChangeEvent } from "react";
 import EmailAuth from "./EmailAuth";
 import HobbyList from "./HobbyBox";
+import axios from "axios";
 
 interface Field {
   label?: string;
@@ -27,8 +28,21 @@ const InputField: React.FC<{
   value: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }> = ({ field, value, onChange }) => (
-  <div style={{ display: "flex", alignItems: "flex-start", flexDirection: "column" }}>
-    <p style={{ padding: "0 0 5px", margin: "0", fontSize: "13px", color: "black" }}>
+  <div
+    style={{
+      display: "flex",
+      alignItems: "flex-start",
+      flexDirection: "column",
+    }}
+  >
+    <p
+      style={{
+        padding: "0 0 5px",
+        margin: "0",
+        fontSize: "13px",
+        color: "black",
+      }}
+    >
       {field.label}
     </p>
     <StyledInput
@@ -49,7 +63,12 @@ const InfoPage: React.FC = () => {
 
   const fields: Field[] = [
     { label: "이름", name: "userName", type: "text" },
-    { label: "생년월일", name: "userBtd", type: "number", placeholder: "생년월일 8자리" },
+    {
+      label: "생년월일",
+      name: "userBtd",
+      type: "number",
+      placeholder: "생년월일 8자리",
+    },
   ];
 
   const [formData, setFormData] = useState<FormData>({
@@ -65,7 +84,8 @@ const InfoPage: React.FC = () => {
 
   useEffect(() => {
     const allFieldsFilled = Object.values(formData).every(
-      (field) => field !== "" && (Array.isArray(field) ? field.length > 0 : true)
+      (field) =>
+        field !== "" && (Array.isArray(field) ? field.length > 0 : true)
     );
     setIsFilled(allFieldsFilled && codeValid);
   }, [formData, codeValid]);
@@ -85,7 +105,7 @@ const InfoPage: React.FC = () => {
   const handleHobbyChange = (selectedHobbies: string[]) => {
     setFormData((prev) => {
       let newHobbies = [...prev.hobbies];
-  
+
       selectedHobbies.forEach((hobby) => {
         if (newHobbies.includes(hobby)) {
           newHobbies = newHobbies.filter((h) => h !== hobby);
@@ -93,7 +113,7 @@ const InfoPage: React.FC = () => {
           newHobbies.push(hobby);
         }
       });
-  
+
       return {
         ...prev,
         hobbies: newHobbies,
@@ -106,6 +126,28 @@ const InfoPage: React.FC = () => {
       ...prevData,
       hobbies: [],
     }));
+  };
+
+  const SignUphandler = async () => {
+    const formattedData = {
+      username: formData.userId,
+      password: formData.password,
+      firstName: formData.userName,
+      email: formData.email,
+      birthDate: formData.userBtd,
+      gender: formData.sex,
+      chatRoomUrl: formData.kakaoURL,
+      hobbies: formData.hobbies,
+    };
+
+    try {
+      const res = await axios.post(
+        "https://pzjo7nmt2j.execute-api.ap-northeast-2.amazonaws.com/Prod/signup",
+        formattedData
+      );
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   console.log(formData);
@@ -127,8 +169,8 @@ const InfoPage: React.FC = () => {
             type="radio"
             id="male"
             name="sex"
-            value="남자"
-            checked={formData.sex === "남자"}
+            value="MALE" 
+            checked={formData.sex === "MALE"}
             onChange={handleChange}
           />
           <label htmlFor="male">남자</label>
@@ -136,8 +178,8 @@ const InfoPage: React.FC = () => {
             type="radio"
             id="female"
             name="sex"
-            value="여자"
-            checked={formData.sex === "여자"}
+            value="FEMALE"
+            checked={formData.sex === "FEMALE"}
             onChange={handleChange}
           />
           <label htmlFor="female">여자</label>
@@ -159,9 +201,9 @@ const InfoPage: React.FC = () => {
         <HobbyList
           hobbies={formData.hobbies}
           onHobbyChange={handleHobbyChange}
-          clearAll = {handleClearHobbies}
+          clearAll={handleClearHobbies}
         />
-        <SignupBTN disabled={!isFilled} onClick={() => { console.log("가입하기"); }}>
+        <SignupBTN disabled={!isFilled} onClick={SignUphandler}>
           가입하기
         </SignupBTN>
       </Layout>
@@ -232,4 +274,3 @@ const SignupBTN = styled.button<{ disabled: boolean }>`
   font-weight: bold;
   margin-bottom: 50px;
 `;
-
