@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import React, { useState, useEffect, ChangeEvent } from "react";
 import EmailAuth from "./EmailAuth";
@@ -56,6 +56,7 @@ const InputField: React.FC<{
 );
 
 const InfoPage: React.FC = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const { userId, password } = location.state || {};
   const [isFilled, setIsFilled] = useState(true);
@@ -145,6 +146,10 @@ const InfoPage: React.FC = () => {
         "https://pzjo7nmt2j.execute-api.ap-northeast-2.amazonaws.com/Prod/signup",
         formattedData
       );
+   if(res.status === 200){
+    navigate("/")
+    alert("회원가입 완료!")
+   }
     } catch (error) {
       console.log(error)
     }
