@@ -38,7 +38,8 @@ const LoginForm: React.FC = () => {
       );
       console.log(res);
       if (res.status === 200) {
-        // navigate("/main");
+        sessionStorage.setItem("token", res.data.token);
+        navigate("/matching");
       }
     } catch (error) {
       alert("유효하지 않은 ID 혹은 PW입니다.");
