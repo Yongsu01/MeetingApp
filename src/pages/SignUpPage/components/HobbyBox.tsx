@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 type Category = "sports" | "culture" | "music" | "art";
@@ -30,33 +30,61 @@ const hobbyOptions = {
   ],
 };
 
-const HobbyList: React.FC<{ hobbies: string[], onHobbyChange: (selectedHobbies: string[]) => void, clearAll:(()=>void) }> = ({ hobbies, onHobbyChange,clearAll }) => {
+const HobbyList: React.FC<{
+  hobbies: string[];
+  onHobbyChange: (selectedHobbies: string[]) => void;
+  clearAll: () => void;
+}> = ({ hobbies, onHobbyChange, clearAll }) => {
   const [isOpen, setIsOpen] = useState<Record<Category, boolean>>({
     sports: false,
     culture: false,
     music: false,
     art: false,
   });
+  const [selectedHobbies, setSelectedHobbies] = useState<string[]>(hobbies);
 
   const toggleCategory = (category: Category) => {
     setIsOpen((prev) => ({ ...prev, [category]: !prev[category] }));
   };
 
-  const handleHobbyChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const selectedHobbies = Array.from(e.target.selectedOptions, (option) => option.value);
+  const handleHobbySelect = (category: Category, hobby: string) => {
+    setSelectedHobbies((prev) => {
+      const isSelected = prev.includes(hobby);
+      if (isSelected) {
+        return prev.filter((h) => h !== hobby);
+      } else {
+        return [...prev, hobby];
+      }
+    });
+  };
+
+  const handleClear = () => {
+    clearAll();
+    setSelectedHobbies([]);
+  };
+
+  const handleSubmit = () => {
     onHobbyChange(selectedHobbies);
   };
 
-  const handleClear =()=>{
-    clearAll();
-  }
-
   return (
     <Container>
-      <div style={{display:'flex', justifyContent:'space-between'}}> 
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
         <p>취미</p>
-        <button style={{border:'none',background:'white', padding:'0', color:'grey', fontSize:'12px', textDecoration:'underline'}} onClick={handleClear}>전체삭제</button>
-        </div>
+        <button
+          style={{
+            border: "none",
+            background: "white",
+            padding: "0",
+            color: "grey",
+            fontSize: "12px",
+            textDecoration: "underline",
+          }}
+          onClick={handleClear}
+        >
+          전체삭제
+        </button>
+      </div>
       {Object.keys(hobbyOptions).map((categoryKey) => {
         const category = categoryKey as Category;
         return (
@@ -72,28 +100,28 @@ const HobbyList: React.FC<{ hobbies: string[], onHobbyChange: (selectedHobbies: 
             </CategoryButton>
 
             {isOpen[category] && (
-              <StyledSelect
-                name={category}
-                multiple
-                value={hobbies.filter((hobby) => hobbyOptions[category].some(option => option.value === hobby))}
-                onChange={(e) => handleHobbyChange(e)}
-              >
+              <Dropdown>
                 {hobbyOptions[category].map((option) => (
-                  <option key={option.value} value={option.value}>
+                  <li
+                    key={option.value}
+                    onClick={() => handleHobbySelect(category, option.value)}
+                    className={selectedHobbies.includes(option.value) ? "selected" : ""}
+                  >
                     {option.label}
-                  </option>
+                  </li>
                 ))}
-              </StyledSelect>
+              </Dropdown>
             )}
           </CategoryWrapper>
         );
       })}
+      <p style={{color:'red'}}>취미 입력후 반드시 저장해주세요!</p>
+      <button onClick={handleSubmit}>저장</button>
     </Container>
   );
 };
 
 export default HobbyList;
-
 
 const Container = styled.div`
   width: 100%;
@@ -114,17 +142,34 @@ const CategoryButton = styled.button`
   height: 45px;
   color: black;
   text-align: left;
-  border: 1px solid rgba(0,0,0,0.4);
+  border: 1px solid rgba(0, 0, 0, 0.4);
   background-color: white;
   font-size: 14px;
   padding-left: 15px;
   cursor: pointer;
 `;
 
-const StyledSelect = styled.select`
-  width: 100%;
-  height: fit-content;
+const Dropdown = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
   margin-top: 10px;
-  padding: 5px;
   border: 1px solid #ccc;
+  background: white;
+  position: absolute;
+  width: 290px;
+  max-height: 200px;
+  overflow-y: auto;
+
+  li {
+    padding: 8px 15px;
+    cursor: pointer;
+    &.selected {
+      background-color: #d3d3d3;
+    }
+
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
 `;
