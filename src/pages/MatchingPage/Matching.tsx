@@ -1,21 +1,35 @@
 import styled from "styled-components";
-import React, { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent } from "react";
 import AgeRange from "./components/AgeRange";
 import HobbyList from "../SignUpPage/components/HobbyBox";
 import axios from "axios";
+import MatchingModal from "./components/Modal";
 
-  interface FormData {
-    userAge: string[];
-    sex: string[];
-    hobbies: string[];
-  }
+interface FormData {
+  userAge: string[];
+  sex: string[];
+  hobbies: string[];
+}
 
-  const Matching = () => {
-    const [formData, setFormData] = useState<FormData>({
-      userAge: [],
-      sex: [],
-      hobbies: [],
-    });
+interface User {
+  id: number;
+  firstname: string;
+  age: number;
+  gender: string;
+  profileImageUrl: string;
+}
+
+const Matching = () => {
+  const [formData, setFormData] = useState<FormData>({
+    userAge: [],
+    sex: [],
+    hobbies: [],
+  });
+
+  const [matchedUsers, setMatchedUsers] = useState<User[]>([]);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
 
   const handleAgeSelect = (ages: string[]) => {
     setFormData((prev) => ({ ...prev, userAge: ages }));
@@ -25,7 +39,7 @@ import axios from "axios";
     const { value, checked } = e.target;
     setFormData((prev) => {
       const updatedSex = checked
-        ? [...prev.sex, value] 
+        ? [...prev.sex, value]
         : prev.sex.filter((sex) => sex !== value);
 
       return {
@@ -34,6 +48,7 @@ import axios from "axios";
       };
     });
   };
+
   const handleClearHobbies = () => {
     setFormData((prevData) => ({
       ...prevData,
@@ -60,33 +75,39 @@ import axios from "axios";
     });
   };
 
-  const handleSearchPeopl = () => {
+  const handleSearchPeople = (page: number = 1) => {
     const token = sessionStorage.getItem("token");
     if (!token) {
       alert("로그인 해주세요!");
       return;
     }
-  
+
     const params = new URLSearchParams();
     formData.sex.forEach((sex) => params.append("gender", sex));
     formData.hobbies.forEach((hobby) => params.append("hobbies", hobby));
     formData.userAge.forEach((ageRange) => params.append("ageRanges", ageRange));
+    params.append("pageNumber", String(page));
+
     const url = `https://pzjo7nmt2j.execute-api.ap-northeast-2.amazonaws.com/Prod/matches/25?${params.toString()}`;
-    axios.get(url, {
+
+    axios
+      .get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
-        console.log("매칭 결과:", response.data);
+        console.log(response)
+        setMatchedUsers(response.data.content);
+        setTotalPages(response.data.totalPages);
+        setCurrentPage(page); 
+        setModalOpen(true); 
       })
       .catch((error) => {
         console.log(error);
         alert("매칭 정보를 불러오는 데 실패했습니다.");
       });
   };
-
-  console.log(formData);
 
   return (
     <Layout>
@@ -118,20 +139,29 @@ import axios from "axios";
           <label htmlFor="female">여자</label>
         </SexDiv>
 
-          <AgeRange onAgeSelect={handleAgeSelect} />
-          <HobbyList
+        <AgeRange onAgeSelect={handleAgeSelect} />
+        <HobbyList
           hobbies={formData.hobbies}
           onHobbyChange={handleHobbyChange}
           clearAll={handleClearHobbies}
         />
       </Container>
-
-      <SearchBTN onClick={handleSearchPeopl}>찾기</SearchBTN>
+      <SearchBTN onClick={() => handleSearchPeople(0)}>찾기</SearchBTN>
+      {isModalOpen && (
+        <MatchingModal
+          users={matchedUsers}
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onClose={() => setModalOpen(false)}
+          onPageChange={handleSearchPeople}
+        />
+      )}
     </Layout>
   );
 };
 
 export default Matching;
+
 const Layout = styled.div`
   display: flex;
   flex-direction: column;
@@ -143,10 +173,9 @@ const Container = styled.div`
   width: 290px;
 `;
 
-
 const SexDiv = styled.div`
   width: 100%;
-  gap:1px;
+  gap: 1px;
   background-color: gray;
   overflow: hidden;
   display: flex;
@@ -180,9 +209,9 @@ const SexDiv = styled.div`
 `;
 
 const SearchBTN = styled.button`
-margin-top: 50px;
+  margin-top: 50px;
   border: none;
-  color: #007AFF;
+  color: #007aff;
   background-color: white;
   font-size: 22px;
 `;
