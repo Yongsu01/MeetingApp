@@ -17,6 +17,7 @@ interface User {
   age: number;
   gender: string;
   profileImageUrl: string;
+  chatroomUrl : string;
 }
 
 const Matching = () => {
