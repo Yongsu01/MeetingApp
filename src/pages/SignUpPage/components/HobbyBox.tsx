@@ -64,6 +64,7 @@ const HobbyList: React.FC<{
   };
 
   const handleSubmit = () => {
+    alert('저장완료!')
     onHobbyChange(selectedHobbies);
   };
 
@@ -153,7 +154,6 @@ const Dropdown = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;
-  margin-top: 10px;
   border: 1px solid #ccc;
   background: white;
   position: absolute;
@@ -166,10 +166,6 @@ const Dropdown = styled.ul`
     cursor: pointer;
     &.selected {
       background-color: #d3d3d3;
-    }
-
-    &:hover {
-      background-color: #f0f0f0;
     }
   }
 `;
