@@ -54,7 +54,7 @@ const MatchingModal: React.FC<ModalProps> = ({
                   <strong>성별:</strong>{" "}
                   {user.gender === "MALE" ? "남자" : "여자"}
                 </p>
-                <div><strong>카카오톡 URL :</strong> <a href={user.chatroomUrl}>{user.chatroomUrl}</a></div>
+                <div><strong>카카오톡 URL :</strong> <a target="_blank" href={'https://'+user.chatroomUrl}>{user.chatroomUrl}</a></div>
               </UserInfo>
             </UserCard>
           ))}
