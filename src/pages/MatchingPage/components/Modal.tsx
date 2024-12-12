@@ -7,6 +7,7 @@ interface User {
   age: number;
   gender: string;
   profileImageUrl: string;
+  chatroomUrl:string;
 }
 
 interface ModalProps {
@@ -34,7 +35,7 @@ const MatchingModal: React.FC<ModalProps> = ({
     <Overlay>
       <ModalContainer>
         <CloseButton onClick={onClose}>X</CloseButton>
-        <h2 style={{margin:'10px 0 10px 0'}}>매칭 결과</h2>
+        <h2 style={{margin:'0'}}>매칭 결과</h2>
         <UserList>
           {users.map((user) => (
             <UserCard key={user.id}>
@@ -53,6 +54,7 @@ const MatchingModal: React.FC<ModalProps> = ({
                   <strong>성별:</strong>{" "}
                   {user.gender === "MALE" ? "남자" : "여자"}
                 </p>
+                <div><strong>카카오톡 URL :</strong> <a href={user.chatroomUrl}>{user.chatroomUrl}</a></div>
               </UserInfo>
             </UserCard>
           ))}
@@ -102,7 +104,7 @@ const ModalContainer = styled.div`
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   position: relative;
-  max-height: 85vh;
+  max-height: 90vh;
   overflow-y: auto;
 `;
 
