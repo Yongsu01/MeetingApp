@@ -53,7 +53,7 @@ const Layout = styled.div`
 const PageDiv = styled.div`
   color: #000;
   font-size: 32px;
-  margin-top: 150px;
+  margin-top: 110px;
   font-weight: bold;
 `;
 
